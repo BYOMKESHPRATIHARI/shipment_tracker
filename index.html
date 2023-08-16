@@ -1,1 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+       /* Set the size of the div element that contains the map */
+      #map {
+        height: 400px;  /* The height is 400 pixels */
+        width: 100%;  /* The width is the width of the web page */
+       }
+    </style>
+  </head>
+  <body>
+    <h3>My Google Maps Demo</h3>
+    <!--The div element for the map -->
+    <div id="map"></div>
+    <script>
+let locationProvider;
 
+// (1) Authentication Token Fetcher
+function authTokenFetcher(options) {
+  // options is a record containing two keys called 
+  // serviceType and context. The developer should
+  // generate the correct SERVER_TOKEN_URL and request
+  // based on the values of these fields.
+  const response = await fetch(SERVER_TOKEN_URL);
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+      const data = await response.json();
+      return {
+        token: data.Token,
+        expiresInSeconds: data.ExpiresInSeconds
+      };
+}
+
+// Initialize and add the map
+function initMap() {
+  // (2) Initialize location provider.
+  locationProvider = new google.maps.journeySharing.FleetEngineShipmentLocationProvider({
+    YOUR_PROVIDER_ID,
+    authTokenFetcher,
+  });
+
+  // (3) Initialize map view (which contains the map).
+  const mapView = new google.maps.journeySharing.JourneySharingMapView({
+    element: document.getElementById('map'), 
+    locationProvider: locationProvider,
+    // any styling options
+  });
+
+  locationProvider.trackingId = TRACKING_ID;
+
+    // (4) Add customizations like before.
+
+    // The location of Uluru
+    var uluru = {lat: -25.344, lng: 131.036};
+    // The map, initially centered at Mountain View, CA.
+    var map = mapView.map;
+    map.setOptions({center: {lat: 37.424069, lng: -122.0916944}, zoom: 14});
+    // The marker, now positioned at Uluru
+    var marker = new google.maps.Marker({position: uluru, map: map});
+  };
+
+    </script>
+    <!-- Load the API from the specified URL
+      * The async attribute allows the browser to render the page while the API loads
+      * The key parameter will contain your own API key (which is not needed for this tutorial)
+      * The callback parameter executes the initMap() function
+      *
+      * (5) Add the journey sharing library to the API loader.
+    -->
+    <script defer
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap&libraries=journeySharing">
+    </script>
+  </body>
+</html>
